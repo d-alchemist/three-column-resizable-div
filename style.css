@@ -41,19 +41,22 @@
     height: var(--height);
     width: calc((100% - var(--drawer-width)) / 3);
     max-width: 98.5%;
+    background-color: #293030;
 }
 
 .css-box {
-    background-color: teal;
     flex: 0 0 auto;
 }
 
 .js-box {
-    background-color: thistle;
     flex: 0 0 auto;
 }
 
 .hbs-box {
-    background-color: teal;
     flex: 0 1 auto;
+}
+
+.bottom {
+    background: #4d4242;
+    height: 10px;
 }
