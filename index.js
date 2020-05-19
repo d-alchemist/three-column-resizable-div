@@ -23,9 +23,11 @@ let oldPosition = 0;
 let lastDblClicked = '';
 const windowWidth = window.innerWidth;
 
-jsResizer.addEventListener('dblclick', expandJs);
-cssResizer.addEventListener('dblclick', expandCss);
-hbsResizer.addEventListener('dblclick', expandHbs);
+window.addEventListener('load', () => {
+	jsResizer.addEventListener('dblclick', expandJs);
+	cssResizer.addEventListener('dblclick', expandCss);
+	hbsResizer.addEventListener('dblclick', expandHbs);
+})
 
 function getResizerWidth() {
 	resizerWidth = cssResizer.getBoundingClientRect().width;
@@ -33,7 +35,7 @@ function getResizerWidth() {
 
 function validateSizes() {
 	getPresentDimensions();
-	return cssRectBox.width && jsRectBox.width && hbsRectBox.width;
+	return cssRectBox.width === jsRectBox.width === hbsRectBox.width;
 }
 
 function getPresentDimensions() {
@@ -74,32 +76,34 @@ function convertPercentToNum(whoseWidth) {
 	return Number(widthNum);
 }
 
-function expandHbs() {
-	lastDblClicked = 'hbs';
+const expandHbs = () => {
 	if (validateSizes() || lastDblClicked !== 'hbs') {
-		console.log('1');
 		adjustBoxes(98.5, 0, 0);
+		lastDblClicked = 'hbs';
 		return;
 	}
 	adjustBoxes(32.833, 32.833, 32.833);
+	lastDblClicked = '';
 };
 
-function expandJs() {
-	lastDblClicked = 'js';
+const expandJs = () => {
 	if (validateSizes() || lastDblClicked !== 'js') {
 		adjustBoxes(0, 98.5, 0);
+		lastDblClicked = 'js';
 		return;
 	}
 	adjustBoxes(32.833, 32.833, 32.833);
+	lastDblClicked = '';
 };
 
-function expandCss() {
-	lastDblClicked = 'css';
+const expandCss = () => {
 	if (validateSizes() || lastDblClicked !== 'css') {
 		adjustBoxes(0, 0, 98.5);
+		lastDblClicked = 'css';
 		return;
 	}
 	adjustBoxes(32.833, 32.833, 32.833);
+	lastDblClicked = '';
 };
 
 function convertToPercent(val, totalVal) {
@@ -158,7 +162,6 @@ function holdJSHandler(e) {
 	getPresentDimensions();
 	removeTransition();
 	initJsClientX = e.clientX;
-	console.log(initJsClientX);
 	container.addEventListener('mousemove', movingJS);
 	container.addEventListener('mouseup', removeJsEvents);
 }
