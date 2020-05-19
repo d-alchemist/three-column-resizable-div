@@ -23,7 +23,7 @@ let oldPosition = 0;
 let lastDblClicked = '';
 const windowWidth = window.innerWidth;
 
-window.addEventListener('load', () => {
+window.addEventListener('DOMContentLoaded', () => {
 	jsResizer.addEventListener('dblclick', expandJs);
 	cssResizer.addEventListener('dblclick', expandCss);
 	hbsResizer.addEventListener('dblclick', expandHbs);
