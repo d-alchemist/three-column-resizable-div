@@ -16,7 +16,8 @@ let initCssClientX,
 	jsResizerRectBox,
 	cssResizerRectBox,
 	hbsResizerRectBox,
-	jsBoxLastWidth;
+	jsBoxLastWidth,
+	resizerWidth;
 
 let oldPosition = 0;
 let lastDblClicked = '';
@@ -25,6 +26,10 @@ const windowWidth = window.innerWidth;
 jsResizer.addEventListener('dblclick', expandJs);
 cssResizer.addEventListener('dblclick', expandCss);
 hbsResizer.addEventListener('dblclick', expandHbs);
+
+function getResizerWidth() {
+	resizerWidth = cssResizer.getBoundingClientRect().width;
+}
 
 function validateSizes() {
 	getPresentDimensions();
@@ -70,46 +75,32 @@ function convertPercentToNum(whoseWidth) {
 }
 
 function expandHbs() {
-	if (validateSizes()) {
+	lastDblClicked = 'hbs';
+	if (validateSizes() || lastDblClicked !== 'hbs') {
+		console.log('1');
 		adjustBoxes(98.5, 0, 0);
-		lastDblClicked = 'hbs';
-		return;
-	}
-	if (lastDblClicked !== 'hbs') {
-		adjustBoxes(98.5, 0, 0);
-		lastDblClicked = 'hbs';
 		return;
 	}
 	adjustBoxes(32.833, 32.833, 32.833);
-}
+};
 
 function expandJs() {
-	if (validateSizes()) {
+	lastDblClicked = 'js';
+	if (validateSizes() || lastDblClicked !== 'js') {
 		adjustBoxes(0, 98.5, 0);
-		lastDblClicked = 'js';
-		return;
-	}
-	if (lastDblClicked !== 'js') {
-		adjustBoxes(0, 98.5, 0);
-		lastDblClicked = 'js';
 		return;
 	}
 	adjustBoxes(32.833, 32.833, 32.833);
-}
+};
 
 function expandCss() {
-	if (validateSizes()) {
+	lastDblClicked = 'css';
+	if (validateSizes() || lastDblClicked !== 'css') {
 		adjustBoxes(0, 0, 98.5);
-		lastDblClicked = 'css';
-		return;
-	}
-	if (lastDblClicked !== 'css') {
-		adjustBoxes(0, 0, 98.5);
-		lastDblClicked = 'css';
 		return;
 	}
 	adjustBoxes(32.833, 32.833, 32.833);
-}
+};
 
 function convertToPercent(val, totalVal) {
 	return (val / totalVal) * 100;
@@ -130,25 +121,27 @@ function movingCSS(e) {
 	const jsRectBoxCon = convertToPercent(jsRectBox.width, windowWidth);
 	const clientXCond = convertToPercent(e.clientX, windowWidth);
 	const diff = clientXCond - convertToPercent(initCssClientX, windowWidth);
-	if (Math.ceil(cssResizerRectBox.x + cssResizerRectBox.width) === windowWidth && e.pageX < oldPosition) {
+	if (
+		Math.ceil(cssResizerRectBox.x + cssResizerRectBox.width) === windowWidth &&
+		e.pageX < oldPosition
+	) {
 		// If css resizer is at the edge of the screen and the user is moving the arrow right
 		return;
 	} else {
 		let sumJs = jsRectBoxCon + diff;
 		let sumcss = cssRectBoxCon - diff;
-		sumJs < 0 ? sumJs = 0 : sumJs;
-		sumcss < 0 ? sumcss = 0 : sumcss;
+		sumJs < 0 ? (sumJs = 0) : sumJs;
+		sumcss < 0 ? (sumcss = 0) : sumcss;
 		cssBox.style.width = `${sumcss}%`;
 		jsBox.style.width = `${sumJs}%`;
 	}
-	
+
 	if (
-		Math.round(jsResizerRectBox.right) ===
-			Math.round(cssResizerRectBox.left) &&
+		Math.round(jsResizerRectBox.right) === Math.round(cssResizerRectBox.left) &&
 		e.pageX < oldPosition
 	) {
 		let hbsSum = 99 - convertPercentToNum(cssBox.style.width);
-		hbsSum < 0 ? hbsSum = 0: hbsSum;
+		hbsSum < 0 ? (hbsSum = 0) : hbsSum;
 		hbsBox.style.width = `${hbsSum}%`;
 	}
 	if (e.pageX > oldPosition) {
@@ -165,7 +158,7 @@ function holdJSHandler(e) {
 	getPresentDimensions();
 	removeTransition();
 	initJsClientX = e.clientX;
-	console.log(initJsClientX)
+	console.log(initJsClientX);
 	container.addEventListener('mousemove', movingJS);
 	container.addEventListener('mouseup', removeJsEvents);
 }
@@ -180,19 +173,18 @@ function movingJS(e) {
 		hbsBox.style.cursor = 'col-resize';
 	} else {
 		let sum = jsRectBoxCon - diff;
-		sum < 0 ? sum = 0: sum;
+		sum < 0 ? (sum = 0) : sum;
 		hbsBox.style.width = `${hbsRectBoxCon + diff}%`;
 		jsBox.style.width = `${sum}%`;
 		jsBoxLastWidth = jsBox.style.width;
 	}
 
 	if (
-		Math.round(jsResizerRectBox.right) ===
-			Math.round(cssResizerRectBox.left) &&
+		Math.round(jsResizerRectBox.right) === Math.round(cssResizerRectBox.left) &&
 		e.pageX > oldPosition
 	) {
 		cssBox.style.width = `${99 - convertPercentToNum(hbsBox.style.width)}%`;
-		if (e.clientX > (windowWidth - 2)) {
+		if (e.clientX > windowWidth - 2) {
 			cssBox.style.width = '0%';
 		}
 	}
